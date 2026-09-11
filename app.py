@@ -20,11 +20,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Helper to load mascot image as Base64 for custom HTML cards
+# Robust path resolution for mascot asset (works both locally and on Streamlit Cloud)
+BASE_DIR = Path(__file__).resolve().parent
+MASCOT_PATH = BASE_DIR / "assets" / "mascot.jpg"
+
 def get_mascot_base64():
-    mascot_path = Path("assets/mascot.jpg")
-    if mascot_path.exists():
-        with open(mascot_path, "rb") as f:
+    if MASCOT_PATH.exists():
+        with open(MASCOT_PATH, "rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
     return ""
 
@@ -400,6 +402,7 @@ with st.sidebar:
                 clean_key = user_entered_key.strip()
                 if clean_key:
                     os.environ["GEMINI_API_KEY"] = clean_key
+                    st.session_state["gemini_api_key"] = clean_key
                     try:
                         with open(".env", "w", encoding="utf-8") as env_f:
                             env_f.write(
@@ -460,7 +463,7 @@ if not quiz_mode:
 
     # Render all previous chat messages with mascot avatar
     for msg in st.session_state.messages:
-        avatar = "assets/mascot.jpg" if msg["role"] == "assistant" and Path("assets/mascot.jpg").exists() else ("🎓" if msg["role"] == "user" else None)
+        avatar = str(MASCOT_PATH) if msg["role"] == "assistant" and MASCOT_PATH.exists() else ("🎓" if msg["role"] == "user" else None)
         with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
 

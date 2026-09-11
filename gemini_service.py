@@ -10,7 +10,7 @@ from google.genai.errors import APIError
 load_dotenv()
 
 # Default Gemini Flash model supported by the official google-genai SDK
-DEFAULT_MODEL = "gemini-3.6-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 # Competition security safeguard: Maximum characters allowed per user prompt
 MAX_PROMPT_LENGTH = 10000
@@ -41,9 +41,9 @@ def _sanitize_and_format_error(e: Exception) -> str:
 
     # Check for authentication / authorization errors
     if isinstance(e, APIError) and getattr(e, "code", None) in [401, 403]:
-        return "Authentication error: Please verify that your GEMINI_API_KEY is valid and authorized."
-    if any(term in err_str for term in ["API_KEY_INVALID", "invalid api key", "PERMISSION_DENIED"]):
-        return "Invalid or unauthorized API key. Please verify your GEMINI_API_KEY in the .env file."
+        return "Authentication error: Please verify that your GEMINI_API_KEY is valid and authorized (keys from Google AI Studio start with AIzaSy...)."
+    if any(term in err_str for term in ["API_KEY_INVALID", "invalid api key", "PERMISSION_DENIED", "UNAUTHENTICATED"]):
+        return "Invalid or unauthorized API key. Please check your GEMINI_API_KEY in Streamlit Secrets or sidebar."
 
     # Generic API error
     if isinstance(e, APIError):
@@ -58,21 +58,39 @@ def _sanitize_and_format_error(e: Exception) -> str:
 
 def get_api_key() -> str:
     """
-    Retrieves and validates the Gemini API key from environment variables.
+    Retrieves and validates the Gemini API key from environment variables,
+    Streamlit Cloud secrets, or session state.
     Never returns placeholder values.
     """
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key or api_key == "your_gemini_api_key_here":
-        raise GeminiServiceError(
-            "GEMINI_API_KEY is not configured. Please set your key in the .env file."
-        )
-    return api_key
+        try:
+            import streamlit as st
+            if "GEMINI_API_KEY" in st.secrets:
+                api_key = str(st.secrets["GEMINI_API_KEY"]).strip()
+            elif "gemini_api_key" in st.secrets:
+                api_key = str(st.secrets["gemini_api_key"]).strip()
+            elif hasattr(st, "session_state") and "gemini_api_key" in st.session_state:
+                api_key = str(st.session_state.get("gemini_api_key", "")).strip()
+        except Exception:
+            pass
+
+    if api_key and api_key != "your_gemini_api_key_here":
+        os.environ["GEMINI_API_KEY"] = api_key
+        return api_key
+
+    raise GeminiServiceError(
+        "GEMINI_API_KEY is not configured. Please set your key in the .env file or Streamlit Cloud Secrets."
+    )
 
 
 def is_api_configured() -> bool:
     """Checks whether a valid non-placeholder Gemini API key is configured."""
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    return bool(api_key and api_key != "your_gemini_api_key_here")
+    try:
+        key = get_api_key()
+        return bool(key and key != "your_gemini_api_key_here")
+    except Exception:
+        return False
 
 
 def get_gemini_client() -> genai.Client:
