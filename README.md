@@ -10,11 +10,16 @@ LearnMate AI is an educational chatbot designed to make personalized, high-quali
 
 ```text
 LearnMate-AI/
+├── .streamlit/
+│   └── config.toml     # Streamlit theme & server configuration
+├── assets/
+│   └── mascot.jpg      # AI tutor mascot visual asset
 ├── app.py              # Streamlit interactive web interface (Chat & Quiz modes)
 ├── api.py              # FastAPI REST backend service (/health, /chat)
 ├── gemini_service.py   # Reusable Gemini Flash integration & quiz generation
 ├── prompts.py          # Pedagogical system prompt definitions for SDG 4
 ├── test_gemini.py      # Diagnostic connectivity test script
+├── test_qa_suite.py    # 15-category automated competition QA test suite
 ├── requirements.txt    # Project dependencies
 ├── .env                # Local environment secrets (ignored by Git)
 ├── .env.example        # Safe template for environment configuration
