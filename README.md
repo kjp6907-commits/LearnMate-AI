@@ -1,6 +1,9 @@
 # 🎓 LearnMate AI
 
+[![Live Website](https://img.shields.io/badge/Live_Website-GitHub_Pages-2ea44f?style=for-the-badge&logo=github)](https://kjp6907-commits.github.io/LearnMate-AI/)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=kjp6907-commits/LearnMate-AI&branch=main&mainModule=app.py)
+
+🌐 **Live Web Application:** [https://kjp6907-commits.github.io/LearnMate-AI/](https://kjp6907-commits.github.io/LearnMate-AI/)
 
 > **A Personalized AI Learning Tutor for UN Sustainable Development Goal 4: Quality Education.**
 
