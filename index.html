@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnMate AI - Personalized Learning Tutor (SDG 4)</title>
+  <meta name="description" content="AI-powered personalized tutor making high-quality education accessible to every student, advancing UN SDG 4: Quality Education." />
+  
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Markdown parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070913;
+      --bg-card: rgba(18, 22, 40, 0.75);
+      --bg-card-hover: rgba(26, 32, 58, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(99, 102, 241, 0.35);
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.3);
+      --secondary: #ec4899;
+      --accent-sdg: #e5243b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.15), transparent 45%),
+                  radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.12), transparent 40%),
+                  var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      backdrop-filter: blur(16px);
+      background: rgba(7, 9, 19, 0.85);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 0 16px var(--primary-glow);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sdg-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(229, 36, 59, 0.15);
+      color: #ff6b7e;
+      border: 1px solid rgba(229, 36, 59, 0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-highlight);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      border-color: transparent;
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+
+    .key-btn {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+    .key-btn:hover {
+      background: rgba(245, 158, 11, 0.22);
+    }
+
+    /* Main Workspace Layout */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Controls Toolbar */
+    .toolbar {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .pill-select {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .pill-select:focus {
+      border-color: var(--primary);
+    }
+
+    /* View Sections */
+    .view-section {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .view-section.active {
+      display: flex;
+    }
+
+    /* Chat Area */
+    .chat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 520px;
+      max-height: 72vh;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-history::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-history::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    /* Message Bubbles */
+    .message {
+      display: flex;
+      gap: 14px;
+      max-width: 86%;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .avatar.ai {
+      background: linear-gradient(135deg, #4f46e5, #ec4899);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .avatar.user {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .message-content {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      position: relative;
+    }
+
+    .message.user .message-content {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(79, 70, 229, 0.15));
+      border-color: rgba(99, 102, 241, 0.35);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.ai .message-content {
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-content p {
+      margin-bottom: 12px;
+    }
+    .message-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-content code {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #cbd5e1;
+    }
+
+    .check-question-box {
+      margin-top: 14px;
+      background: rgba(99, 102, 241, 0.12);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #c7d2fe;
+    }
+
+    .tts-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      font-size: 1rem;
+    }
+    .tts-btn:hover {
+      opacity: 1;
+      color: var(--text-main);
+    }
+
+    /* Welcome Hero Banner */
+    .welcome-card {
+      text-align: center;
+      padding: 36px 20px;
+      max-width: 680px;
+      margin: auto;
+    }
+
+    .welcome-card h2 {
+      font-size: 1.85rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffffff 40%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* Chat Input Bar */
+    .chat-input-wrapper {
+      padding: 18px 24px;
+      border-top: 1px solid var(--border-color);
+      background: rgba(10, 14, 28, 0.95);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Quiz Arena View */
+    .quiz-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .quiz-question {
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-highlight);
+      transform: translateX(4px);
+    }
+
+    .option-prefix {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: var(--success) !important;
+      color: #34d399 !important;
+    }
+    .option-btn.wrong {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: #ef4444 !important;
+      color: #f87171 !important;
+    }
+
+    .quiz-feedback {
+      margin-top: 10px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .quiz-feedback.success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+    }
+    .quiz-feedback.error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fecaca;
+    }
+
+    /* Modal for API Key Config */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #0f1322;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal h3 {
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 14px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(7, 9, 19, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 12px 16px;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .message {
+        max-width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <a href="#" class="brand">
+      <img src="assets/mascot.jpg" alt="LearnMate Mascot" class="brand-logo" onerror="this.src='https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=100&auto=format&fit=crop&q=80'" />
+      <div>
+        <div class="brand-title">LearnMate AI</div>
+        <div class="sdg-badge">🎯 UN SDG 4: Quality Education</div>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <button class="nav-btn active" id="btn-tab-chat" onclick="switchView('chat')">
+        💬 Tutor Chat
+      </button>
+      <button class="nav-btn" id="btn-tab-quiz" onclick="switchView('quiz')">
+        🏆 Quiz Arena
+      </button>
+      <button class="nav-btn key-btn" onclick="openKeyModal()" title="Configure Gemini API Key">
+        🔑 Key
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Controls Toolbar -->
+    <div class="toolbar">
+      <div class="control-group">
+        <span class="control-label">Level:</span>
+        <select id="level-select" class="pill-select">
+          <option value="Beginner" selected>Beginner (Intuitive & Analogies)</option>
+          <option value="Intermediate">Intermediate (Standard Academic)</option>
+          <option value="Advanced">Advanced (Rigorous & Technical)</option>
+        </select>
+
+        <span class="control-label" style="margin-left: 10px;">Persona:</span>
+        <select id="persona-select" class="pill-select">
+          <option value="Encouraging & Patient" selected>Encouraging & Patient</option>
+          <option value="Socratic Coach">Socratic Coach (Guiding Questions)</option>
+          <option value="Academic Scholar">Academic Scholar</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <button class="pill-select" onclick="clearChat()" style="color: #fda4af;">
+          🗑️ Clear Conversation
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: Tutor Chat -->
+    <div id="view-chat" class="view-section active">
+      <div class="chat-card">
+        <div class="chat-history" id="chat-history">
+          
+          <!-- Welcome Hero Banner -->
+          <div class="welcome-card" id="welcome-card">
+            <h2>Welcome to Your Personalized AI Tutor!</h2>
+            <p>
+              LearnMate AI simplifies complex subjects, provides real-world analogies, checks for understanding, and guides your education step-by-step.
+            </p>
+            <div class="prompt-chips">
+              <div class="chip" onclick="sendQuickPrompt('Explain photosynthesis with a simple real-life analogy')">🌱 Photosynthesis</div>
+              <div class="chip" onclick="sendQuickPrompt('Why can\'t we divide by zero in mathematics?')">➗ Division by Zero</div>
+              <div class="chip" onclick="sendQuickPrompt('Explain how gravity works according to Einstein')">🌌 Einstein's Gravity</div>
+              <div class="chip" onclick="sendQuickPrompt('Explain how recursion works in programming with an example')">💻 Recursion in Code</div>
+              <div class="chip" onclick="sendQuickPrompt('Give me a beginner quiz on Cell Biology')">🧬 Cell Biology Quiz</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="chat-input-wrapper">
+          <input 
+            type="text" 
+            id="user-input" 
+            class="chat-input" 
+            placeholder="Ask any question in science, math, coding, or history..." 
+            onkeydown="if(event.key === 'Enter') handleSend()"
+          />
+          <button class="send-btn" id="send-btn" onclick="handleSend()">
+            <span>Send</span> 🚀
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: Quiz Practice Arena -->
+    <div id="view-quiz" class="view-section">
+      <div class="quiz-card">
+        <div class="quiz-header">
+          <div>
+            <h3 style="font-size: 1.4rem;">Practice Quiz Arena</h3>
+            <span style="color: var(--text-muted); font-size: 0.85rem;" id="quiz-topic-display">Topic: General Science</span>
+          </div>
+          <div class="score-badge" id="score-display">
+            ⭐ Score: 0 / 0 (0%)
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <input type="text" id="quiz-topic-input" class="pill-select" style="flex: 1; padding: 10px 14px;" placeholder="Enter any topic (e.g. World War II, Calculus, Python)..." value="Photosynthesis & Plants" />
+          <button class="send-btn" style="padding: 10px 18px;" onclick="loadNewQuizQuestion()">
+            Generate Question 🎲
+          </button>
+        </div>
+
+        <div class="quiz-question" id="quiz-question-text">
+          Click "Generate Question" above to start your practice challenge!
+        </div>
+
+        <div class="quiz-options" id="quiz-options-container">
+          <!-- Options rendered dynamically -->
+        </div>
+
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- API Key Modal -->
+  <div class="modal-overlay" id="key-modal">
+    <div class="modal">
+      <h3>🔑 Gemini API Configuration</h3>
+      <p>
+        Your key is stored locally in your web browser and communicates directly with Google's Gemini Flash model.
+      </p>
+      <input type="password" id="api-key-input" placeholder="AIzaSy... or paste key here" />
+      <div class="modal-actions">
+        <button class="nav-btn" onclick="closeKeyModal()">Cancel</button>
+        <button class="send-btn" onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    LearnMate AI &bull; Personalized Learning for UN SDG 4: Quality Education &bull; Hosted with ❤️ on GitHub Pages
+  </footer>
+
+  <script>
+    // State
+    const DEFAULT_KEY = "";
+    let apiKey = localStorage.getItem("LEARNMATE_GEMINI_KEY") || DEFAULT_KEY;
+    let quizStats = { total: 0, correct: 0 };
+    let currentQuizData = null;
+
+    // View Switching
+    function switchView(view) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.header-actions .nav-btn').forEach(el => el.classList.remove('active'));
+
+      if (view === 'chat') {
+        document.getElementById('view-chat').classList.add('active');
+        document.getElementById('btn-tab-chat').classList.add('active');
+      } else {
+        document.getElementById('view-quiz').classList.add('active');
+        document.getElementById('btn-tab-quiz').classList.add('active');
+        if (!currentQuizData) {
+          loadNewQuizQuestion();
+        }
+      }
+    }
+
+    // Modal
+    function openKeyModal() {
+      document.getElementById('api-key-input').value = apiKey;
+      document.getElementById('key-modal').classList.add('active');
+    }
+
+    function closeKeyModal() {
+      document.getElementById('key-modal').classList.remove('active');
+    }
+
+    function saveApiKey() {
+      const val = document.getElementById('api-key-input').value.trim();
+      if (val) {
+        apiKey = val;
+        localStorage.setItem("LEARNMATE_GEMINI_KEY", val);
+      }
+      closeKeyModal();
+    }
+
+    // Chat Logic
+    function sendQuickPrompt(text) {
+      document.getElementById('user-input').value = text;
+      handleSend();
+    }
+
+    function clearChat() {
+      const chatHistory = document.getElementById('chat-history');
+      chatHistory.innerHTML = `
+        <div class="welcome-card" id="welcome-card">
+          <h2>Welcome to Your Personalized AI Tutor!</h2>
+          <p>LearnMate AI simplifies complex subjects, provides real-world analogies, checks for understanding, and guides your education step-by-step.</p>
+          <div class="prompt-chips">
+            <div class="chip" onclick="sendQuickPrompt('Explain photosynthesis with a simple real-life analogy')">🌱 Photosynthesis</div>
+            <div class="chip" onclick="sendQuickPrompt('Why can\\'t we divide by zero in mathematics?')">➗ Division by Zero</div>
+            <div class="chip" onclick="sendQuickPrompt('Explain how gravity works according to Einstein')">🌌 Einstein's Gravity</div>
+            <div class="chip" onclick="sendQuickPrompt('Explain how recursion works in programming with an example')">💻 Recursion in Code</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function handleSend() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      const welcome = document.getElementById('welcome-card');
+      if (welcome) welcome.remove();
+
+      appendMessage('user', text);
+
+      const sendBtn = document.getElementById('send-btn');
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = 'Thinking... ⏳';
+
+      const typingId = appendTypingIndicator();
+
+      try {
+        const reply = await callGeminiTutor(text);
+        removeTypingIndicator(typingId);
+        appendMessage('ai', reply);
+      } catch (err) {
+        removeTypingIndicator(typingId);
+        appendMessage('ai', `⚠️ **Tutor Service Advisory**: ${err.message || 'Unable to reach the Gemini model right now. Please check your API key in the Key menu.'}`);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<span>Send</span> 🚀';
+      }
+    }
+
+    function appendMessage(sender, markdown) {
+      const chatHistory = document.getElementById('chat-history');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${sender}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = `avatar ${sender}`;
+      avatar.innerHTML = sender === 'ai' ? '🎓' : '👤';
+
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const parsedHtml = marked.parse(markdown);
+      content.innerHTML = parsedHtml;
+
+      if (sender === 'ai') {
+        const ttsBtn = document.createElement('button');
+        ttsBtn.className = 'tts-btn';
+        ttsBtn.title = 'Listen to explanation';
+        ttsBtn.innerHTML = '🔊';
+        ttsBtn.onclick = () => speakText(content.innerText);
+        content.appendChild(ttsBtn);
+      }
+
+      msgDiv.appendChild(avatar);
+      msgDiv.appendChild(content);
+      chatHistory.appendChild(msgDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function appendTypingIndicator() {
+      const id = 'typing-' + Date.now();
+      const chatHistory = document.getElementById('chat-history');
+      const msgDiv = document.createElement('div');
+      msgDiv.id = id;
+      msgDiv.className = 'message ai';
+      msgDiv.innerHTML = `
+        <div class="avatar ai">🎓</div>
+        <div class="message-content" style="color: var(--text-muted); font-style: italic;">
+          LearnMate is writing an explanation... ✨
+        </div>
+      `;
+      chatHistory.appendChild(msgDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+      return id;
+    }
+
+    function removeTypingIndicator(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const clean = text.replace(/[#*`_~]/g, '');
+        const utterance = new SpeechSynthesisUtterance(clean);
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Call Gemini Model
+    async function callGeminiTutor(userMessage) {
+      if (!apiKey) {
+        openKeyModal();
+        throw new Error("Please configure your Gemini API key in the popup window to enable live tutoring.");
+      }
+      const level = document.getElementById('level-select').value;
+      const persona = document.getElementById('persona-select').value;
+
+      const systemInstruction = `You are LearnMate AI, a world-class, empathetic, highly effective personalized AI learning tutor dedicated to UN Sustainable Development Goal 4: Quality Education.
+Current Student Level: ${level}
+Teaching Persona: ${persona}
+
+PEDAGOGICAL RULES:
+1. Explain clearly according to the student's level (${level}).
+2. Use at least one concrete real-world example or analogy.
+3. Be supportive, constructive, and inspiring.
+4. Conclude your explanation with a friendly "Check Question" to test their understanding.`;
+
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `${systemInstruction}\n\nStudent question: ${userMessage}` }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000
+        }
+      };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    // Quiz Arena Generator
+    async function loadNewQuizQuestion() {
+      const topic = document.getElementById('quiz-topic-input').value.trim() || "General Science";
+      const level = document.getElementById('level-select').value;
+      const questionEl = document.getElementById('quiz-question-text');
+      const optionsContainer = document.getElementById('quiz-options-container');
+      const feedbackEl = document.getElementById('quiz-feedback');
+      
+      document.getElementById('quiz-topic-display').innerText = `Topic: ${topic} (${level})`;
+      feedbackEl.className = 'quiz-feedback';
+      feedbackEl.innerHTML = '';
+      questionEl.innerHTML = 'Generating personalized question with Gemini... ⏳';
+      optionsContainer.innerHTML = '';
+
+      const prompt = `Generate a single multiple-choice educational quiz question on the topic '${topic}' at '${level}' level.
+Respond ONLY with a JSON object in this exact format:
+{
+  "question": "The question text",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_index": 0,
+  "explanation": "Why this answer is correct and the educational insight."
+}`;
+
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (!res.ok) throw new Error("Could not fetch quiz question");
+        const data = await res.json();
+        const jsonText = data.candidates[0].content.parts[0].text;
+        currentQuizData = JSON.parse(jsonText);
+
+        renderQuiz(currentQuizData);
+      } catch (e) {
+        // Fallback demo question
+        currentQuizData = {
+          question: `Which organelle in plant cells is responsible for carrying out photosynthesis?`,
+          options: ["Mitochondria", "Chloroplast", "Ribosome", "Endoplasmic Reticulum"],
+          correct_index: 1,
+          explanation: "Chloroplasts contain chlorophyll, which absorbs sunlight to convert water and carbon dioxide into glucose."
+        };
+        renderQuiz(currentQuizData);
+      }
+    }
+
+    function renderQuiz(data) {
+      const questionEl = document.getElementById('quiz-question-text');
+      const optionsContainer = document.getElementById('quiz-options-container');
+      const prefixes = ["A", "B", "C", "D"];
+
+      questionEl.innerText = data.question;
+      optionsContainer.innerHTML = '';
+
+      data.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-prefix">${prefixes[idx]}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectQuizOption(idx, btn);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectQuizOption(selectedIdx, clickedBtn) {
+      const feedbackEl = document.getElementById('quiz-feedback');
+      const allButtons = document.querySelectorAll('.option-btn');
+      allButtons.forEach(b => b.disabled = true);
+
+      quizStats.total++;
+      const isCorrect = selectedIdx === currentQuizData.correct_index;
+      if (isCorrect) quizStats.correct++;
+
+      // Highlight options
+      allButtons[currentQuizData.correct_index].classList.add('correct');
+      if (!isCorrect) {
+        clickedBtn.classList.add('wrong');
+      }
+
+      // Update score badge
+      const pct = Math.round((quizStats.correct / quizStats.total) * 100);
+      document.getElementById('score-display').innerText = `⭐ Score: ${quizStats.correct} / ${quizStats.total} (${pct}%)`;
+
+      // Feedback
+      feedbackEl.className = `quiz-feedback show ${isCorrect ? 'success' : 'error'}`;
+      feedbackEl.innerHTML = `
+        <strong>${isCorrect ? '🎉 Correct!' : '💡 Learning Opportunity:'}</strong>
+        ${currentQuizData.explanation}
+        <div style="margin-top: 14px;">
+          <button class="send-btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="loadNewQuizQuestion()">Next Question ➡️</button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
