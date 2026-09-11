@@ -1,5 +1,7 @@
 # 🎓 LearnMate AI
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=kjp6907-commits/LearnMate-AI&branch=main&mainModule=app.py)
+
 > **A Personalized AI Learning Tutor for UN Sustainable Development Goal 4: Quality Education.**
 
 LearnMate AI is an educational chatbot designed to make personalized, high-quality tutoring accessible to students worldwide. It simplifies complex academic concepts, adapts explanations to the learner's knowledge level, offers real-world examples, checks for understanding, and provides interactive practice and quizzes.
