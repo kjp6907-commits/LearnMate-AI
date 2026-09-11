@@ -10,7 +10,7 @@ from google.genai.errors import APIError
 load_dotenv()
 
 # Default Gemini Flash model supported by the official google-genai SDK
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
 
 # Competition security safeguard: Maximum characters allowed per user prompt
 MAX_PROMPT_LENGTH = 10000
